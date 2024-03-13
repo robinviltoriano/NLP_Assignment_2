@@ -1,6 +1,7 @@
 import pandas as pd
 from utils import clean_text
 import faiss
+import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
 
