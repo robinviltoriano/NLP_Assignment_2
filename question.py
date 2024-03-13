@@ -60,6 +60,10 @@ def query_answer(query, top_k=5):
     output = ''
     for art_chunk in results:
         if art_chunk['id'] in article_id:
-            output += f"From article id {str(art_chunk['id'])}, {art_chunk['article']}. "
-            
+            output += f"From article id {str(art_chunk['id'])[:-1]}, {art_chunk['article']}. "
+    
+    
+
+
+
     return output

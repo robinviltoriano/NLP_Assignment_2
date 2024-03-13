@@ -44,7 +44,7 @@ def chunk_text(data_index, data_text, chunk_size, chunk_overlap):
 def data_prep(csv_file):
     data = get_data(csv_file)
     data['article'] = data['article'].apply(clean_text)
-    data_chunk = chunk_text(data['id'], data['article'], 500, 50)
+    data_chunk = chunk_text(data['id'], data['article'], 50, 10)
   
     encoded_data = model.encode(data_chunk['article'].tolist())
     encoded_data = np.asarray(encoded_data.astype('float32'))
