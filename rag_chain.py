@@ -35,6 +35,12 @@ def get_rag_chain(context):
         second_question = "How many of them is from report?"
         ai_msg = rag_chain.invoke({"question": second_question, "chat_history": chat_history})
         chat_history.extend([HumanMessage(content=second_question), ai_msg])
+        
+        >>> chat_history
+        >>> [HumanMessage(content='What is the weight of this assignment?'),
+            '30% of this assignment weigh ng is for the code, and 70% for the report. The code and the report are marked per rubric.',
+            HumanMessage(content='How many of them is from report?'),
+            '70%']
     """
     
     def get_context():
