@@ -36,14 +36,6 @@ def chunk_text(data_index, data_text, chunk_size, chunk_overlap):
 
     return pd.DataFrame(list_chunk_text, columns=['id', 'article'])
 
-# data_chunk = chunk_text(df['id'], df['article'], 500, 50)
-
-
-
-def cross_score(model_inputs):
-    scores = cross_model.predict(model_inputs)
-    return scores
-
 def data_prep(csv_file):
     data = get_data(csv_file)
     data['article'] = data['article'].apply(clean_text)
@@ -55,11 +47,6 @@ def data_prep(csv_file):
     index = faiss.IndexIDMap(faiss.IndexFlatIP(768))
     index.add_with_ids(encoded_data, np.array(range(0, len(data_chunk))))
     faiss.write_index(index, 'data_article.index')
-
-
-
-def main():
-    data_prep('./news_dataset.csv')
 
     
 
