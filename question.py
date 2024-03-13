@@ -1,6 +1,7 @@
 import pandas as pd
 from utils import clean_text
 import faiss
+
 from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
 
@@ -40,7 +41,8 @@ def cross_score(model_inputs):
 def query_answer(query, top_k=5):
     # query = "Who is the vice chairman of Samsung?"
     query = clean_text(query)
-    results = search(query, top_k=10, index=index, model=model,)
+
+    results = search(query, top_k=10, index=index, model=model)
 
     model_inputs = [[query, item['article']] for item in results]
     scores = cross_score(model_inputs)
