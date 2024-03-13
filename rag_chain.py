@@ -11,19 +11,19 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage
 
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+# def format_docs(docs):
+#     return "\n\n".join(doc.page_content for doc in docs)
 
 
 
 
 model = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":1000})
 
-def get_rag_chain(context):
+def get_rag_chain(retriever):
     """
     Des: This function returns a RAG chain which can be used to answer questions based on the given context.
     Params:
-    * context: any
+    * retriever: a function that given a query, return 
     
     Example usecase:
         chat_history = []
@@ -43,9 +43,9 @@ def get_rag_chain(context):
             '70%']
     """
     
-    def get_context():
-        #Thinh's part
-        pass
+    def get_context(sth):
+        print(retriever, sth)
+        return retriever
     
     contextualize_q_system_prompt = """Given a chat history and the latest user question \
                                     which might reference context in the chat history, formulate a standalone question \
@@ -63,6 +63,7 @@ def get_rag_chain(context):
     
     def contextualized_question(input: dict):
         if input.get("chat_history"):
+            print(contextualize_q_chain)
             return contextualize_q_chain
         else:
             return input["question"]
@@ -82,7 +83,7 @@ def get_rag_chain(context):
 
     rag_chain = (
         RunnablePassthrough.assign(
-            context=contextualized_question | get_context | format_docs
+            context=contextualized_question | RunnableLambda(get_context)
         )
         | qa_prompt
         | model
