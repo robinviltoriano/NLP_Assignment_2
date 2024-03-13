@@ -52,10 +52,5 @@ def data_prep(csv_file):
     index.add_with_ids(encoded_data, np.array(range(0, len(data_chunk))))
     faiss.write_index(index, 'data_article.index')
 
-
-
-def main():
-    data_prep('./news_dataset.csv')
-
     
 
