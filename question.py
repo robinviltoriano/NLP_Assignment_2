@@ -1,5 +1,6 @@
 from utils import clean_text
 import faiss
+import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
 
@@ -7,11 +8,12 @@ model = SentenceTransformer('msmarco-distilbert-base-dot-prod-v3')
 cross_model = CrossEncoder('cross-encoder/ms-marco-TinyBERT-L-6', max_length=512)
 
 index = faiss.read_index('data_article.index')
+data_chunk = pd.read_csv('data_chunk.csv')
 
-def fetch_data_info(data, dataframe_idx, score):
+def fetch_data_info(dataframe_idx, score):
 
     '''Data should be data_chunk'''
-    info = data.iloc[dataframe_idx]
+    info = data_chunk.iloc[dataframe_idx]
     meta_dict = {}
     meta_dict['id'] = info['id']
     meta_dict['article'] = info['article']
