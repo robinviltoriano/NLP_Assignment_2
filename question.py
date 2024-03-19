@@ -38,32 +38,17 @@ def cross_score(model_inputs):
     scores = cross_model.predict(model_inputs)
     return scores
 
-def query_answer(query, top_k=5):
+def query_answer(query, top_k=10):
     # query = "Who is the vice chairman of Samsung?"
     query = clean_text(query)
 
-    results = search(query, top_k=10, index=index, model=model)
+    # Search top 20 related documents
+    results = search(query, top_k=20, index=index, model=model)
 
-    model_inputs = [[query, item['article']] for item in results]
+    # Sort the scores in decreasing order
+    model_inputs = [[query, result['article']] for result in results]
     scores = cross_score(model_inputs)
-
-    #Sort the scores in decreasing order
-    ranked_results = [{'Id': inp['id'], 'Score': score} for inp, score in zip(results, scores)]
-    ranked_results = sorted(ranked_results, key=lambda x: x['Score'], reverse=True)
+    ranked_results = [{'id': result['id'], 'article': result['article'], 'score': score} for result, score in zip(results, scores)]
+    ranked_results = sorted(ranked_results, key=lambda x: x['score'], reverse=True)
     
-    # get the top k article ids
-    article_id = []
-    for id in ranked_results[:top_k]:
-        article_id.append(id['Id'])
-    
-    # combine the output into a single string
-    output = ''
-    for art_chunk in results:
-        if art_chunk['id'] in article_id:
-            output += f"From article id {str(art_chunk['id'])[:-1]}, {art_chunk['article']}. "
-    
-    
-
-
-
-    return output
+    return pd.DataFrame(ranked_results[:top_k])
