@@ -79,7 +79,8 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-splinter_sandbox.ipynb
+sandbox.ipynb
+
 
 # IPython
 profile_default/
