@@ -1,6 +1,7 @@
+import pandas as pd
 from utils import clean_text
 import faiss
-import pandas as pd
+
 from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
 
@@ -37,27 +38,27 @@ def cross_score(model_inputs):
     scores = cross_model.predict(model_inputs)
     return scores
 
-def query_answer(query, top_k=5):
+def query_answer(query, query_id, top_k=10):
     # query = "Who is the vice chairman of Samsung?"
     query = clean_text(query)
-    results = search(query, top_k=10, index=index, model=model)
 
-    model_inputs = [[query, item['article']] for item in results]
+    # Search top 20 related documents
+    results = search(query, top_k=20, index=index, model=model)
+
+    # Sort the scores in decreasing order
+    model_inputs = [[query, result['article']] for result in results]
     scores = cross_score(model_inputs)
+    ranked_results = [{'id': result['id'], 'article': result['article'], 'score': score} for result, score in zip(results, scores)]
+    ranked_results = sorted(ranked_results, key=lambda x: x['score'], reverse=True)
+    
+    result_dataset = []
+    for i, rank in enumerate(ranked_results[:3]):
+        dataset = {'question_id': query_id,
+                   'question': query,
+                   'rank': i + 1,
+                   'article_id': rank['id'] // 10,
+                   'article': rank['article'],
+                   'score': rank['score']}
+        result_dataset.append(dataset)
 
-    #Sort the scores in decreasing order
-    ranked_results = [{'Id': inp['id'], 'Score': score} for inp, score in zip(results, scores)]
-    ranked_results = sorted(ranked_results, key=lambda x: x['Score'], reverse=True)
-    
-    # get the top k article ids
-    article_id = []
-    for id in ranked_results[:top_k]:
-        article_id.append(id['Id'])
-    
-    # combine the output into a single string
-    output = ''
-    for art_chunk in results:
-        if art_chunk['id'] in article_id:
-            output += f"From article id {str(art_chunk['id'])}, {art_chunk['article']}. "
-            
-    return output
+    return result_dataset

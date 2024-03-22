@@ -79,8 +79,6 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-sandbox.ipynb
-BERT.ipynb
 
 
 # IPython
