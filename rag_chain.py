@@ -10,6 +10,7 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage
+from langchain_openai import ChatOpenAI
 
 # def format_docs(docs):
 #     return "\n\n".join(doc.page_content for doc in docs)
@@ -17,7 +18,9 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 
 
-model = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":1000})
+# model = HuggingFaceHub(repo_id="google/flan-t5-base", model_kwargs={"temperature":0.5, "max_length":1000})
+
+model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
 
 def get_rag_chain(retriever):
     """
@@ -43,13 +46,13 @@ def get_rag_chain(retriever):
             '70%']
     """
     
-    def get_context(sth):
-        print(retriever, sth)
+    def get_context(question):
+        # print(retriever, question)
         return retriever
     
-    contextualize_q_system_prompt = """Given a chat history and the latest user question \
-                                    which might reference context in the chat history, formulate a standalone question \
-                                    which can be understood without the chat history. Do NOT answer the question, \
+    contextualize_q_system_prompt = """Given a chat history and the latest user question
+                                    which might reference context in the chat history, formulate a standalone question 
+                                    which can be understood without the chat history. Do NOT answer the question, 
                                     just reformulate it if needed and otherwise return it as is. But the most important thing, you have to answer using natural language as a human.{chat_history}"""
     contextualize_q_prompt = ChatPromptTemplate.from_messages(
         [
@@ -63,15 +66,15 @@ def get_rag_chain(retriever):
     
     def contextualized_question(input: dict):
         if input.get("chat_history"):
-            print(contextualize_q_chain)
+            # print(contextualize_q_chain)
             return contextualize_q_chain
         else:
             return input["question"]
     
-    qa_system_prompt = """You are an assistant for question-answering tasks. \
-                        Use the following pieces of retrieved context to answer the question. \
-                        If you don't know the answer, just say that you don't know. But the most important thing, you have to answer using natural language as a human.\
-
+    qa_system_prompt = """you are an AI assistant. I will give you the given context, and you will have to answer only base on given context, using Natural Language:
+                        
+                            Things to remember:
+                            1. The answer has to be from the context that I give you, you can not use your own knowledge. This will help to avoid hallucination
                         {context}"""
     qa_prompt = ChatPromptTemplate.from_messages(
         [
