@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 a.py
 ner.ipynb
+snippet_sandbox.ipynb
+questions_ranking.csv
