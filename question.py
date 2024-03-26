@@ -1,12 +1,16 @@
 import pandas as pd
 from utils import clean_text
 import faiss
+from transformers import pipeline
 
 from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
 
-model = SentenceTransformer('msmarco-distilbert-base-dot-prod-v3')
+embedding_model = SentenceTransformer('msmarco-distilbert-base-dot-prod-v3')
 cross_model = CrossEncoder('cross-encoder/ms-marco-TinyBERT-L-6', max_length=512)
+
+snippet_model = "huggingface-course/bert-finetuned-squad"
+snippet_question_answerer = pipeline("question-answering", model=snippet_model)
 
 index = faiss.read_index('data_article.index')
 data_chunk = pd.read_csv('data_chunk.csv')
@@ -43,12 +47,22 @@ def query_answer(query, top_k=10):
     query = clean_text(query)
 
     # Search top 20 related documents
-    results = search(query, top_k=20, index=index, model=model)
+    results = search(query, top_k=20, index=index, model=embedding_model)
 
-    # Sort the scores in decreasing order
+    # Sort the scores in descendinga order
     model_inputs = [[query, result['article']] for result in results]
     scores = cross_score(model_inputs)
     ranked_results = [{'id': result['id'], 'article': result['article'], 'score': score} for result, score in zip(results, scores)]
     ranked_results = sorted(ranked_results, key=lambda x: x['score'], reverse=True)
     
     return pd.DataFrame(ranked_results[:top_k])
+
+def snippet_answer(question, context):
+    snippet_ans = snippet_question_answerer(question=question, context=context)
+    return snippet_ans
+
+def get_sorounding_words(article, start_pos, end_pos, num_words=5):
+    s_pos = len(article[:start_pos].split())
+    e_pos = len(article[:end_pos].split())
+    
+    return ' '.join(article.split()[max(0,s_pos-num_words):e_pos+num_words])
