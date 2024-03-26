@@ -42,8 +42,7 @@ def cross_score(model_inputs):
     scores = cross_model.predict(model_inputs)
     return scores
 
-def query_answer(query, top_k=10):
-    # query = "Who is the vice chairman of Samsung?"
+def top_k_article(query, top_k=10):
     query = clean_text(query)
 
     # Search top 20 related documents
@@ -66,3 +65,16 @@ def get_sorounding_words(article, start_pos, end_pos, num_words=5):
     e_pos = len(article[:end_pos].split())
     
     return ' '.join(article.split()[max(0,s_pos-num_words):e_pos+num_words])
+
+def get_answer(query, top_k=1, num_words=5):
+    article_retriever_df = top_k_article(query, top_k= top_k)
+    
+    answer = ''
+    for idx, row in article_retriever_df.iterrows():
+        snippet = snippet_answer(question=query, context=row['article'])
+        longer_snippet = get_sorounding_words(row['article'], start_pos=snippet['start'], end_pos=snippet['end'], num_words=10)
+
+        answer += f"article: {row['id']}, with confidence: {row['score']}\n{longer_snippet}\n"
+        
+    return answer
+    
