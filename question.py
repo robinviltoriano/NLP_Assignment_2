@@ -73,7 +73,7 @@ def get_answer(query, top_k=1, num_words=5):
     answer = ''
     for idx, row in article_retriever_df.iterrows():
         snippet = snippet_answer(question=query, context=row['article'])
-        longer_snippet = get_sorounding_words(row['article'], start_pos=snippet['start'], end_pos=snippet['end'], num_words=10)
+        longer_snippet = get_sorounding_words(row['article'], start_pos=snippet['start'], end_pos=snippet['end'], num_words=num_words)
 
         answer += f"article: {row['id']}, with confidence: {row['score']}\n{longer_snippet}\n"
         
