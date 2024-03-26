@@ -38,17 +38,24 @@ def cross_score(model_inputs):
     scores = cross_model.predict(model_inputs)
     return scores
 
-def query_answer(query, top_k=10):
+def query_answer(query, top_k=3):
     # query = "Who is the vice chairman of Samsung?"
     query = clean_text(query)
 
     # Search top 20 related documents
-    results = search(query, top_k=20, index=index, model=model)
+    results = search(query, top_k=top_k, index=index, model=model)
 
     # Sort the scores in decreasing order
     model_inputs = [[query, result['article']] for result in results]
     scores = cross_score(model_inputs)
     ranked_results = [{'id': result['id'], 'article': result['article'], 'score': score} for result, score in zip(results, scores)]
     ranked_results = sorted(ranked_results, key=lambda x: x['score'], reverse=True)
+    top_results = ranked_results[:top_k]
     
-    return pd.DataFrame(ranked_results[:top_k])
+    context = ''
+    for item in top_results:
+        context += item['article'] + ' '
+    
+    print(f"Context: {context}")
+        
+    return context
