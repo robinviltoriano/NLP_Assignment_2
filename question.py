@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
 
 model = SentenceTransformer('msmarco-distilbert-base-dot-prod-v3')
-cross_model = CrossEncoder('cross-encoder/ms-marco-TinyBERT-L-6', max_length=512)
+cross_model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', max_length=512)
 
 index = faiss.read_index('data_article.index')
 data_chunk = pd.read_csv('data_chunk.csv')
@@ -43,7 +43,7 @@ def query_answer(query, query_id, top_k=10):
     query = clean_text(query)
 
     # Search top 20 related documents
-    results = search(query, top_k=20, index=index, model=model)
+    results = search(clean_text(query), top_k=20, index=index, model=model)
 
     # Sort the scores in decreasing order
     model_inputs = [[query, result['article']] for result in results]
@@ -56,9 +56,11 @@ def query_answer(query, query_id, top_k=10):
         dataset = {'question_id': query_id,
                    'question': query,
                    'rank': i + 1,
-                   'article_id': rank['id'] // 10,
+                   'id': rank['id'] // 10,
                    'article': rank['article'],
                    'score': rank['score']}
         result_dataset.append(dataset)
+    
+    # result_dataset.to_csv('answers_reranked.csv', index=False)
 
     return result_dataset
