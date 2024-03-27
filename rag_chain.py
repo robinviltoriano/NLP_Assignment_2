@@ -6,9 +6,9 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
 
-# model = HuggingFaceHub(repo_id="google/flan-t5-base", model_kwargs={"temperature":0.5, "max_length":1000})
+# model = HuggingFaceHub(repo_id="James449/nlp-t5-qa-model")
 
-model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.5)
+model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
 
 def get_rag_chain(query_answer):
     """
@@ -17,11 +17,6 @@ def get_rag_chain(query_answer):
     * query_answer: a function that given a query, return a string of context
     """
     
-    
-    
-    def get_context(question):
-        print("question", question)
-        return query_answer
     
     contextualize_q_system_prompt = """Given a chat history and the latest user question \
 which might reference context in the chat history, formulate a standalone question \
