@@ -41,11 +41,13 @@ def get_conversation_chain(retriever):
     
     
     # Get the asnwers only based on the given context and the conversation history
-    qa_system_prompt = """you are an AI assistant. I will give you the given context and our conversation history, and you will have to answer only base on given knowledge, using Natural Language. You can not use your own knowledge or public sources and databases. Things to remember:
-                            1. The answer has to be from the given context and our conversation history that I give you.
+    qa_system_prompt = """you are an AI assistant. I will give you the given context, and you will have to answer only base on given knowledge, using Natural Language. You can not use your own knowledge or public sources and databases. Things to remember:
+                            1. The answer has to be from the given context that I give you.
                             2. You can not use your own knowledge or public sources and databases. This will help to avoid hallucination
-                            2. If the answer is not in the given context and our conversation history, just say I don't know
-                            Here is the given context and our conversation history:
+                            3. If the answer is not in the given context, just say I don't know
+                            4. You could use the given confidence score to decide how confident you are in your answer.
+                            5. If the context is an empty string, just say I don't know.
+                            Here is the given context:
                         {context}"""
     qa_prompt = ChatPromptTemplate.from_messages(
         [
