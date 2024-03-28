@@ -38,11 +38,7 @@ def search(query, top_k, index, model):
 
     return results
 
-def cross_score(model_inputs):
-    scores = cross_model.predict(model_inputs)
-    return scores
-
-def top_k_article(query, top_k=10):
+def top_k_article(query, top_k=3):
     query = clean_text(query)
 
     # Search top 20 related documents
@@ -50,16 +46,12 @@ def top_k_article(query, top_k=10):
 
     # Sort the scores in descendinga order
     model_inputs = [[query, result['article']] for result in results]
-    scores = cross_score(model_inputs)
+    scores = cross_model.predict(model_inputs)
+
     ranked_results = [{'id': result['id'], 'article': result['article'], 'score': score} for result, score in zip(results, scores)]
     ranked_results = sorted(ranked_results, key=lambda x: x['score'], reverse=True)
-    top_results = ranked_results[:top_k]
     
     return pd.DataFrame(ranked_results[:top_k])
-
-def snippet_answer(question, context):
-    snippet_ans = snippet_question_answerer(question=question, context=context)
-    return snippet_ans
 
 def get_sorounding_words(article, start_pos, end_pos, num_words=5):
     s_pos = len(article[:start_pos].split())
@@ -71,8 +63,8 @@ def get_answer(query, top_k=1, num_words=5):
     article_retriever_df = top_k_article(query, top_k= top_k)
     
     answer = ''
-    for idx, row in article_retriever_df.iterrows():
-        snippet = snippet_answer(question=query, context=row['article'])
+    for _, row in article_retriever_df.iterrows():
+        snippet = snippet_question_answerer(question=query, context=row['article'])
         longer_snippet = get_sorounding_words(row['article'], start_pos=snippet['start'], end_pos=snippet['end'], num_words=num_words)
 
         answer += f"article: {row['id']}, with confidence: {row['score']}\n{longer_snippet}\n"
