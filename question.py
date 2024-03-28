@@ -60,7 +60,5 @@ def query_answer(query, query_id, top_k=10):
                    'article': rank['article'],
                    'score': rank['score']}
         result_dataset.append(dataset)
-    
-    # result_dataset.to_csv('answers_reranked.csv', index=False)
 
     return result_dataset
