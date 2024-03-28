@@ -1,18 +1,18 @@
-from question import query_answer
+from question import get_answer
 from langchain_core.messages import HumanMessage
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
-from conversation import get_rag_chain
+from conversation import get_conversation_chain
 
 class CustomRetriever(BaseRetriever):
     
     def _get_relevant_documents(
         self, query: str, *, run_manager: CallbackManagerForRetrieverRun
     ):
-        return query_answer(query)
+        return get_answer(query)
 
 retriever = CustomRetriever()
-rag_chain = get_rag_chain(retriever)
+rag_chain = get_conversation_chain(retriever)
 
 chat_history = []
 
