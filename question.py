@@ -67,7 +67,10 @@ def get_answer(query, top_k=1, num_words=5):
         snippet = snippet_question_answerer(question=query, context=row['article'])
         longer_snippet = get_sorounding_words(row['article'], start_pos=snippet['start'], end_pos=snippet['end'], num_words=num_words)
 
-        answer += f"article: {row['id']}, with confidence: {row['score']}\n{longer_snippet}\n"
+        if row['score'] > 0.5:
+            answer += f"confidence score: {round(row['score'],2)}\ncontext: {longer_snippet}\n"
+        else:
+            answer += ""
         
     return answer
     
