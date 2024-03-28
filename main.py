@@ -2,7 +2,7 @@ from question import query_answer
 from langchain_core.messages import HumanMessage
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
-from rag_chain import get_rag_chain
+from conversation import get_rag_chain
 
 class CustomRetriever(BaseRetriever):
     
@@ -25,4 +25,5 @@ def handle_qa(query):
     return chat_history[-1].content
 
 def del_history():
+    global chat_history
     chat_history = []
