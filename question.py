@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
 
 embedding_model = SentenceTransformer('msmarco-distilbert-base-dot-prod-v3')
-cross_model = CrossEncoder('cross-encoder/ms-marco-TinyBERT-L-6', max_length=512)
+cross_model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', max_length=512)
 
 snippet_model = "huggingface-course/bert-finetuned-squad"
 snippet_question_answerer = pipeline("question-answering", model=snippet_model)
@@ -38,6 +38,9 @@ def search(query, top_k, index, model):
 
     return results
 
+def cross_score(model_inputs):
+    scores = cross_model.predict(model_inputs)
+    return scores
 def top_k_article(query, top_k=3):
     query = clean_text(query)
 
@@ -46,7 +49,7 @@ def top_k_article(query, top_k=3):
 
     # Sort the scores in descendinga order
     model_inputs = [[query, result['article']] for result in results]
-    scores = cross_model.predict(model_inputs)
+    scores = cross_score(model_inputs)
 
     ranked_results = [{'id': result['id'], 'article': result['article'], 'score': score} for result, score in zip(results, scores)]
     ranked_results = sorted(ranked_results, key=lambda x: x['score'], reverse=True)
@@ -59,7 +62,7 @@ def get_sorounding_words(article, start_pos, end_pos, num_words=5):
     
     return ' '.join(article.split()[max(0,s_pos-num_words):e_pos+num_words])
 
-def get_answer(query, top_k=1, num_words=5):
+def get_answer(query, top_k=2, num_words=20):
     article_retriever_df = top_k_article(query, top_k= top_k)
     
     answer = ''
@@ -67,8 +70,8 @@ def get_answer(query, top_k=1, num_words=5):
         snippet = snippet_question_answerer(question=query, context=row['article'])
         longer_snippet = get_sorounding_words(row['article'], start_pos=snippet['start'], end_pos=snippet['end'], num_words=num_words)
 
-        if row['score'] > 0.5:
-            answer += f"confidence score: {round(row['score'],2)}\ncontext: {longer_snippet}\n"
+        if snippet['score'] > 0.5:
+            answer += f"confidence score: {round(snippet['score'],3)}\ncontext: {longer_snippet}\n"
         else:
             answer += ""
         
