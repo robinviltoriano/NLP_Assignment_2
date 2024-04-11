@@ -4,13 +4,15 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
+from typing import Callable
 
-def get_conversation_chain(retriever, model_name="gpt-3.5-turbo"):
+def get_conversation_chain(retriever: Callable, model_name: str = "gpt-3.5-turbo") -> RunnableLambda:
     """
-    Des: This function returns a chained conversation which can be invoked to get the answer to a question.
     Params:
     * retriever: a function that given a query, return a string of context
     * model: the model to use for the conversation (default: gpt-3.5-turbo)
+    Returns:
+    * conversation_chain: a chained conversation that can be invoked to get the answer to a question
     """
     model = None
     if model_name == "gpt-3.5-turbo":
