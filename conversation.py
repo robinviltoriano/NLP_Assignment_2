@@ -5,16 +5,21 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 
-
-# model = HuggingFaceHub(repo_id="James449/nlp-t5-qa-model")
-model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
-
-def get_conversation_chain(retriever):
+def get_conversation_chain(retriever, model_name="gpt-3.5-turbo"):
     """
     Des: This function returns a chained conversation which can be invoked to get the answer to a question.
     Params:
     * retriever: a function that given a query, return a string of context
+    * model: the model to use for the conversation (default: gpt-3.5-turbo)
     """
+    model = None
+    if model_name == "gpt-3.5-turbo":
+        model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    elif model_name == "flan-t5-base":
+        model = HuggingFaceHub(repo_id="google/flan-t5-base", model_kwargs={"temperature":0.5, "max_length":1000})
+    elif model_name == "James449/nlp-t5-qa-model":
+        model = HuggingFaceHub(repo_id="James449/nlp-t5-qa-model")
+    
     
     # Reformulating the question based on the chat history and the latest user question for better understanding
     contextualize_q_system_prompt = """Given a chat history and the latest user question \
