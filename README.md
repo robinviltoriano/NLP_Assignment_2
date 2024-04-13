@@ -5,11 +5,12 @@ Firstly, for each question, the system will retrieve relevant articles using a r
 
 This project will use Streamlit as a web-based app.
 
-$ git clone https://github.com/robinviltoriano/NLP_Assignment_2.git
-$ cd NLP_Assignment_2
+## Setup
+To run this project: 
+```
 $ pip install -r requirements.txt
 $ streamlit run app.py
-
+```
 
 
 
