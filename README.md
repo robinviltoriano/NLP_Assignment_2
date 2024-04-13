@@ -7,10 +7,10 @@ Our final product F1-score is 0.85 and runtime overall is 1.5s per query. The sy
 
 This project will use Streamlit as a web-based app.
 
-![nlp_pipeline-pipeline drawio](https://github.com/robinviltoriano/NLP_Assignment_2/assets/153576708/22bbac24-3dcb-4eb3-ac2b-c8996e75992e)
-
+![nlp_pipeline-pipeline](https://github.com/robinviltoriano/NLP_Assignment_2/assets/153576708/e029d7d3-568e-4387-83a1-dde43eb9e197)
 
 ## Setup
+
 To run this project: 
 ```
 $ pip install -r requirements.txt
