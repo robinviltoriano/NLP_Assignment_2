@@ -16,5 +16,10 @@ $ pip install -r requirements.txt
 $ streamlit run app.py
 ```
 
+## Contributors:
+* Nguyen Dang Thinh
+* Robin Viltoriano
+* Pham Ky Cuong
+
 
 
